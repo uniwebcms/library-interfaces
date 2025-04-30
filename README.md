@@ -4,8 +4,6 @@
 
 > Define once. Implement anywhere. Keep content portable.
 
----
-
 ## Library Interfaces in the Uniweb Ecosystem
 
 Library Interfaces are a key component of the [Uniweb Framework](https://uniweb.dev), which separates content from code to enable independent workflows for content creators and developers.
