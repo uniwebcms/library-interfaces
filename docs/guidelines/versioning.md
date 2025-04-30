@@ -1,149 +1,266 @@
-### 2. Use CamelCase
+# Versioning Guidelines for Library Interfaces
 
-All component names should use CamelCase (also known as PascalCase) with the first letter capitalized:
+Library Interfaces use semantic versioning to clearly communicate compatibility and changes. This document explains our versioning approach and provides practical guidance for interface maintainers.
 
-- `Hero`
-- `FeatureShowcase`
-- `ProductComparison`
-- `TeamSection`
+## Semantic Versioning Principles
 
-This convention aligns with React component naming standards and makes component names easily distinguishable from other identifiers.
+We strictly follow semantic versioning with version numbers in the format `MAJOR.MINOR.PATCH`:
 
-### 3. Be Specific But Not Too Specific
+| Version Component | What It Means                                   | Example |
+| ----------------- | ----------------------------------------------- | ------- |
+| **MAJOR**         | Breaking changes that require content updates   | `2.0.0` |
+| **MINOR**         | New components or presets (backward compatible) | `1.1.0` |
+| **PATCH**         | Documentation improvements, typo fixes          | `1.0.1` |
 
-Component names should be specific enough to convey clear purpose, but not so specific that they limit implementation:
+## Version Bump Decision Tree
 
-| ✅ Good Balance   | ❌ Too Generic | ❌ Too Specific                |
-| ----------------- | -------------- | ------------------------------ |
-| `PricingTable`    | `DataTable`    | `ThreeTierPricingGrid`         |
-| `TeamSection`     | `Section`      | `CircularTeamPhotosWithHover`  |
-| `FeatureShowcase` | `ContentBlock` | `ThreeColumnFeaturesWithIcons` |
+```mermaid
+graph TD;
+A[Change proposal] --> B{Remove or rename
+component/preset?};
+B -- yes --> C[MAJOR];
+B -- no --> D{Add new
+component/preset?};
+D -- yes --> E[MINOR];
+D -- no --> F{Documentation
+change only?};
+F -- yes --> G[PATCH];
+F -- no --> H{Clarify existing
+behavior?};
+H -- yes --> I[PATCH];
+H -- no --> J[Evaluate carefully];
+```
 
-**Finding the right balance**: If a name would make sense regardless of how the content is visually presented, it's likely at the right level of specificity.
+## Version Compatibility Guarantees
 
-### 4. Match Domain Terminology
+### MAJOR Version Bumps (x.0.0)
 
-Components should use terminology that content creators in the domain naturally understand:
+When moving from `1.x.x` to `2.0.0`:
 
-| Domain        | ✅ Domain-Appropriate | ❌ Generic Alternative |
-| ------------- | --------------------- | ---------------------- |
-| E-commerce    | `ProductDetail`       | `ItemInfo`             |
-| Education     | `LessonOutline`       | `ContentList`          |
-| Documentation | `APIReference`        | `CodeBlock`            |
+- No compatibility guarantees with previous major versions
+- Content may require updates to work with the new version
+- Component names, preset names, or semantic meanings may have changed
+- Libraries implementing `2.0.0` are not guaranteed to support `1.x.x` content
 
-### 5. Choose Domain Scope Appropriately
+### MINOR Version Bumps (1.x.0)
 
-Components in specialized domains should include domain context when they might be confusing in broader contexts:
+When moving from `1.0.0` to `1.1.0`:
 
-| ✅ Domain-Scoped                | ❌ Potential Confusion   |
-| ------------------------------- | ------------------------ |
-| `ProductCarousel` in e-commerce | `Carousel` (too generic) |
-| `ArticleFeed` in blogs          | `Feed` (too generic)     |
-| `CourseSchedule` in education   | `Schedule` (too generic) |
+- 100% backward compatibility guaranteed
+- Content created for `1.0.0` will work perfectly with `1.1.0`
+- Only additive changes are permitted
+- Libraries implementing `1.1.0` must support all `1.0.0` content
 
-However, don't add domain prefixes when the component is already clearly domain-specific:
+### PATCH Version Bumps (1.0.x)
 
-| ✅ Clear Without Prefix | ❌ Redundant Prefix        |
-| ----------------------- | -------------------------- |
-| `ShoppingCart`          | `EcommerceShoppingCart`    |
-| `TeamMember`            | `CompanyTeamMember`        |
-| `APIEndpoint`           | `DocumentationAPIEndpoint` |
+When moving from `1.0.0` to `1.0.1`:
 
-## Preset Naming Guidelines
+- No functional changes, only documentation improvements
+- Clarifications of existing behavior
+- Typo fixes or improved explanations
+- No impact on content compatibility
 
-### 1. Use Descriptive Adjectives or Nouns
+## Detailed Rules for Version Changes
 
-Presets should describe the content variation using adjectives, nouns, or short phrases:
+### For MINOR Versions (non-breaking):
 
-| ✅ Good Preset Names | ❌ Avoid These Names |
-| -------------------- | -------------------- |
-| `featured`           | `option1`            |
-| `compact`            | `small`              |
-| `detailed`           | `large`              |
-| `promotional`        | `special`            |
-| `technical`          | `variant2`           |
+You MAY:
 
-### 2. Use kebab-case for Multi-Word Presets
+- Add new components
+- Add new presets to existing components
+- Add new documentation
+- Clarify descriptions without changing meaning
 
-Unlike components, presets should use kebab-case (lowercase with hyphens) for multi-word names:
+You MUST NOT:
 
-- `featured-product`
-- `step-by-step`
-- `case-study`
-- `social-proof`
+- Remove any components
+- Remove any presets
+- Rename any components or presets
+- Change the semantic meaning of components or presets
 
-This creates a clear visual distinction between component names and preset names.
+Example acceptable changes for `marketing-v1.1`:
 
-### 3. Focus on Intent, Not Layout
+- Adding a new `PricingComparison` component
+- Adding a new `interactive` preset to an existing component
+- Improving component descriptions
+- Adding usage examples
 
-Presets should describe the content purpose or variation, not the visual layout:
+### For MAJOR Versions (breaking):
 
-| ✅ Purpose-Based Presets | ❌ Layout-Based Presets |
-| ------------------------ | ----------------------- |
-| `featured`               | `large-top`             |
-| `process`                | `three-up`              |
-| `comparison`             | `side-by-side`          |
-| `testimonial`            | `alternating`           |
+You MAY:
 
-**Why it matters**: If a content creator selects a preset named `three-up`, they're thinking about layout. If they select `comparison`, they're thinking about content purpose, which is much more portable across implementations.
+- Rename components to better reflect their purpose
+- Remove components that proved problematic
+- Remove or rename presets
+- Change semantic meanings
+- Restructure component hierarchy
+- Introduce fundamentally new architectural approaches
 
-### 4. Keep Names Short but Clear
+You MUST:
 
-Preset names should be concise but descriptive:
+- Provide clear migration documentation
+- Have compelling reasons for breaking changes
+- Document all removed, renamed or changed components
 
-| ✅ Concise & Clear | ❌ Too Short | ❌ Too Verbose                         |
-| ------------------ | ------------ | -------------------------------------- |
-| `benefits`         | `ben`        | `customer-focused-benefits-list`       |
-| `case-study`       | `cs`         | `detailed-customer-case-study-example` |
-| `quick-start`      | `qs`         | `beginning-guide-for-new-users`        |
+Example breaking changes that require a major version bump:
 
-### 5. Be Consistent Across Components
+- Renaming `LogoCloud` to `PartnerShowcase`
+- Removing the rarely used `minimal` preset from `Hero`
+- Changing the semantic meaning of `featured` preset
+- Splitting a component into multiple more specialized components
 
-When the same preset concept applies to multiple components, use consistent naming:
+## Pre-release Versions
 
-| Concept              | Consistent Usage                                              |
-| -------------------- | ------------------------------------------------------------- |
-| Featured content     | `featured` preset in `TeamMember`, `Product`, `Testimonial`   |
-| Compact display      | `compact` preset in `FeatureList`, `PricingTable`, `FAQ`      |
-| Detailed information | `detailed` preset in `ProductInfo`, `TeamMember`, `CaseStudy` |
+Draft interfaces (in the `drafts/` directory) use a special version pattern:
 
-This consistency creates an intuitive vocabulary for content creators.
+- Version numbers start with `0.x.y`
+- No compatibility guarantees between minor versions
+- Used for interfaces still under development
 
-## Real-World Examples
+Draft interfaces follow this progression:
 
-### Marketing Interface Components
+- `0.1.0` - Initial proposal
+- `0.2.0`, `0.3.0`, etc. - Refinements based on feedback
+- `0.9.0` - Release candidate for final review
+- `1.0.0` - Stable release (moves to `interfaces/` directory)
 
-- `Hero` - Primary attention-grabbing section at the top of a page
-- `FeatureShowcase` - Highlights product or service features
-- `CTASection` - Call-to-action section to drive conversions
-- `Testimonials` - Customer quotes and success stories
-- `PricingDisplay` - Product or service pricing information
+## Version Numbering in Files and IDs
 
-### Documentation Interface Components
+Interface files follow this naming pattern:
 
-- `DocumentPage` - Main documentation content rendered from markdown
-- `NavBar` - Site navigation and search component
-- `TableOfContents` - Page-level table of contents
-- `APIReference` - Technical API documentation
-- `CodeExample` - Runnable code samples with explanations
+- `domain-vMAJOR.MINOR.js`
 
-## Practical Test: Is Your Name Semantic?
+Examples:
 
-To test if your component or preset name is sufficiently semantic:
+- `marketing-v1.0.js`
+- `documentation-v2.0.js`
 
-1. **The Switch Test**: If the visual implementation changed completely, would the name still make sense?
-2. **The Content Creator Test**: Does the name focus on what the content represents rather than how it looks?
-3. **The Future-Proof Test**: Will the name still be appropriate as design trends evolve?
-4. **The Domain Expert Test**: Would a non-technical domain expert understand what the name represents?
+The interface ID includes only the major and minor version:
 
-If you can answer "yes" to all these questions, your name is likely well-chosen.
+- `marketing-v1.0`
+- `documentation-v2.0`
 
-## Common Pitfalls to Avoid
+The actual version property in the interface should include all three components:
 
-1. **Including layout information**: `TwoColumnFeatures`, `GridLayout`
-2. **Including visual style**: `BlueHeader`, `RoundedCards`
-3. **Including technology details**: `ReactSlider`, `FlexboxContainer`
-4. **Vague or meaningless names**: `Section1`, `ContentBlock`, `Component`
-5. **Mixing naming conventions**: `teamMember` (should be `TeamMember`)
+- `version: "1.0.0"`
+- `version: "2.0.1"`
 
-Remember the guiding principle: Name components and presets for what they mean to content creators, not how they'll be implemented.
+## Changelogs
+
+Each interface must maintain a CHANGELOG.md file that documents:
+
+- What changed in each version
+- Why the changes were made
+- Migration guidance (for major versions)
+
+Example changelog format:
+
+```markdown
+# Changelog: Marketing Interface
+
+## [2.0.0] - 2026-03-15
+
+### Breaking Changes
+
+- **Renamed Components**
+  - `LogoCloud` → `PartnerShowcase` (better reflects semantic purpose)
+  - `TeamSection` → `TeamProfile` (more accurate description of content purpose)
+
+### Added
+
+- **New Components**
+  - `AudienceValue` - For targeting content to specific audience segments
+  - `CaseStudy` - For detailed customer success stories
+
+### Migration Guide
+
+See the detailed migration guide for instructions on updating content.
+
+## [1.1.0] - 2025-08-27
+
+### Added
+
+- **New Components**
+
+  - `VideoFeature` - For featuring video content
+  - `DataVisualization` - For charts and data presentations
+
+- **New Presets**
+  - Added `featured` preset to `FeatureShowcase`
+  - Added `calculator` preset to `PricingDisplay`
+```
+
+## Migration Guides
+
+For major version bumps, you should provide a separate migration guide that:
+
+1. Lists all breaking changes
+2. Provides guidance for updating content
+3. Explains the rationale behind changes
+4. Offers examples of before/after content
+
+These guides should be thorough enough that content creators can update their content without guesswork.
+
+## Practical Versioning Examples
+
+### Example 1: Adding a New Component (MINOR)
+
+**Current:** `marketing-v1.0.0`
+
+**Change:** Add a new `VideoFeature` component
+
+**New Version:** `marketing-v1.1.0`
+
+**Rationale:** Adding a component is non-breaking; existing content continues to work.
+
+### Example 2: Renaming a Component (MAJOR)
+
+**Current:** `marketing-v1.1.0`
+
+**Change:** Rename `LogoCloud` to `PartnerShowcase`
+
+**New Version:** `marketing-v2.0.0`
+
+**Rationale:** Renaming a component breaks existing content; requires major version bump.
+
+### Example 3: Documentation Clarification (PATCH)
+
+**Current:** `documentation-v1.0.0`
+
+**Change:** Improve description of `APIReference` component
+
+**New Version:** `documentation-v1.0.1`
+
+**Rationale:** Documentation changes don't affect functionality.
+
+### Example 4: Adding a Preset (MINOR)
+
+**Current:** `marketing-v1.1.0`
+
+**Change:** Add `interactive` preset to `FeatureShowcase`
+
+**New Version:** `marketing-v1.2.0`
+
+**Rationale:** Adding a preset is non-breaking; existing content continues to work.
+
+## Common Versioning Questions
+
+### "Can I improve a component's description without a version bump?"
+
+Yes, clarifying descriptions without changing meaning is a patch-level change.
+
+### "If I add a new preset to a component, what version bump is needed?"
+
+Adding a preset requires a minor version bump (1.0.0 → 1.1.0).
+
+### "We want to completely rethink our approach. What version do we use?"
+
+A fundamental rethinking requires a major version bump (1.x → 2.0).
+
+### "Can we have multiple major versions active simultaneously?"
+
+Yes. Different major versions can coexist in the registry, allowing gradual migration.
+
+## Final Note: Respect Existing Content
+
+The versioning system exists to protect the investment content creators have made. By carefully following these versioning guidelines, we ensure that content remains portable and durable over time, which is one of the key benefits of Library Interfaces.
