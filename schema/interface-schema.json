@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Library Interface",
+  "description": "Schema for Uniweb Library Interface definitions",
+  "type": "object",
+  "required": ["description", "version", "category", "components"],
+  "properties": {
+    "description": {
+      "type": "string",
+      "description": "Brief description of the purpose of this interface",
+      "minLength": 10,
+      "maxLength": 200
+    },
+    "category": {
+      "type": "string",
+      "description": "The category or domain this interface serves",
+      "minLength": 3,
+      "maxLength": 50
+    },
+    "version": {
+      "type": "string",
+      "description": "Semantic version of this interface",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "components": {
+      "type": "object",
+      "description": "The components defined in this interface",
+      "minProperties": 1,
+      "additionalProperties": {
+        "$ref": "#/definitions/component"
+      }
+    }
+  },
+  "definitions": {
+    "component": {
+      "type": "object",
+      "required": ["description", "category", "presets"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "Detailed description of the component's purpose and content semantics",
+          "minLength": 20
+        },
+        "category": {
+          "type": "string",
+          "description": "Functional category of the component",
+          "minLength": 3
+        },
+        "presets": {
+          "type": "object",
+          "description": "Named variations of the component for different semantic purposes",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "string",
+            "description": "Description of the preset's semantic purpose",
+            "minLength": 10
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

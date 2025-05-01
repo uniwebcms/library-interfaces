@@ -27,6 +27,81 @@ This is not a framework, library, or component collection - it's a registry of i
 3. **Content creators** consult to understand available semantic components
 4. **API consumers** use to check implementation claims
 
+## Domain-Concept Organization
+
+Library Interfaces use a hierarchical organization system:
+
+### 1. Domains
+
+**Domains** are broad functional areas that group related interfaces. For example:
+
+- The `marketing` domain includes all interfaces related to marketing websites
+- The `documentation` domain focuses on documentation sites and knowledge bases
+
+Domains represent the primary categorization and help organize interfaces by their overall purpose.
+
+### 2. Concepts
+
+Within each domain, **concepts** represent specific functional focuses or capabilities:
+
+- The `core` concept provides essential components that form the foundation of a domain
+- Specialized concepts like `media` add complementary components for specific needs
+
+Concepts are designed to work together while maintaining non-overlapping components.
+
+### 3. Versions
+
+Each interface evolves through **versions** that follow semantic versioning:
+
+- Major versions (e.g., `2.0`) may introduce breaking changes
+- Minor versions (e.g., `1.1`) add new components or presets
+- Patch versions (e.g., `1.0.1`) make documentation improvements
+
+## Interface Specification Convention
+
+When specifying which interfaces your library implements, use the following format:
+
+```
+domain/concept/version
+```
+
+For example:
+
+```json
+"interfaces": ["marketing/core/1.0"]
+```
+
+To specify multiple concepts from the same domain and version, you can use grouped notation:
+
+```json
+"interfaces": ["marketing/{core,media}/1.0"]
+```
+
+This clearly indicates that your library implements both the `core` and `media` concepts from the `marketing` domain at version `1.0`.
+
+## Progressive Implementation
+
+Library developers can take a progressive approach to implementing interfaces:
+
+1. **Start with Core**: Implement the core concept of a domain to provide essential functionality
+2. **Add Specialized Concepts**: Progressively add specialized concepts as needed
+3. **Mix and Match**: Choose which concepts to implement based on project requirements
+
+For example, a library for marketing websites could start by implementing:
+
+- `marketing/core/1.0` - Essential marketing components (Hero, Features, CTA)
+
+Then progressively add specialized concepts:
+
+- `marketing/media/1.0` - Rich media components (MediaGallery, VideoFeature)
+- `marketing/blog/1.0` - Blogging components (ArticleListing, PostDetail)
+
+This approach allows developers to:
+
+- Implement only what they need
+- Start small and expand over time
+- Create focused libraries for specific use cases
+
 ## Library Interface Layers
 
 The component architecture uses a layered model:
@@ -57,24 +132,25 @@ This makes the `uniweb` command available in your terminal.
 uniweb list interfaces
 
 # Output
-marketing-v1.0     Essential marketing site components
-documentation-v1.0 Standard documentation site components
+marketing/core/1.0     Essential marketing site components
+marketing/media/1.0    Rich media components for marketing
+documentation/core/1.0 Standard documentation site components
 ```
 
 ### Get Interface Details
 
 ```bash
 # View details of a specific interface
-uniweb get interface marketing-v1.0
+uniweb get interface marketing/core/1.0
 
 # Output
-ID: marketing-v1.0
+ID: marketing/core/1.0
 Version: 1.0.0
 Description: Essential marketing site components
 
 Components:
 - Hero (presets: brand, product, campaign, minimal)
-- FeatureShowcase (presets: benefits, capabilities, process)
+- Features (presets: benefits, capabilities, process)
 # ...
 ```
 
@@ -82,10 +158,13 @@ Components:
 
 ```bash
 # Check if a library correctly implements an interface
-uniweb validate-library my-marketing-components marketing-v1.0
+uniweb validate-library my-marketing-components marketing/core/1.0
+
+# Check if a library implements multiple interfaces
+uniweb validate-library my-marketing-components marketing/{core,media}/1.0
 
 # Check if content uses valid components from an interface
-uniweb validate-content ./content marketing-v1.0
+uniweb validate-content ./content marketing/core/1.0
 ```
 
 ## Interface Structure
@@ -93,20 +172,21 @@ uniweb validate-content ./content marketing-v1.0
 Each interface defines a set of semantic components and their presets:
 
 ```js
-// marketing-v1.0.js
+// marketing/core/marketing-core-v1.0.js
 export default {
-  id: "marketing-v1.0",
+  description: "Essential marketing site components",
   version: "1.0.0",
-  description: "Standard interface for marketing websites",
+  category: "marketing",
   components: {
     Hero: {
       description: "Primary attention-grabbing section",
-      presets: [
-        "brand", // Company/brand-focused hero
-        "product", // Product-focused hero
-        "campaign", // Special campaign or promotion hero
-        "minimal", // Simplified, text-focused hero
-      ],
+      category: "Brand Presentation",
+      presets: {
+        brand: "Emphasizes company identity and brand positioning",
+        product: "Focuses on product value proposition and benefits",
+        campaign: "Highlights special campaign or promotion",
+        minimal: "Streamlined, text-focused presentation",
+      },
     },
 
     // More components...
@@ -114,7 +194,17 @@ export default {
 };
 ```
 
-## Versioning Rules (Crystal‑Clear Edition)
+## Non-Overlapping Components Rule
+
+A key principle of Library Interfaces is that components should not overlap across interfaces in the same domain:
+
+- Each component belongs to exactly one interface within a domain
+- This ensures clean boundaries between different concepts
+- Allows libraries to mix and match interfaces as needed
+
+The validation system enforces this rule to maintain modularity.
+
+## Versioning Rules
 
 | Version type      | Allowed changes                                            | Guaranteed to work with | Requires markdown edits? |
 | ----------------- | ---------------------------------------------------------- | ----------------------- | ------------------------ |
@@ -128,10 +218,11 @@ export default {
 
 ## Available Interfaces
 
-| Interface                                   | Version | Purpose                                 | Status |
-| ------------------------------------------- | ------- | --------------------------------------- | ------ |
-| [Marketing](/interfaces/marketing/)         | 1.0     | Marketing websites and landing pages    | Stable |
-| [Documentation](/interfaces/documentation/) | 1.0     | Documentation sites and knowledge bases | Stable |
+| Interface                                             | Version | Purpose                             | Status |
+| ----------------------------------------------------- | ------- | ----------------------------------- | ------ |
+| [marketing/core](/interfaces/marketing/core/)         | 1.0     | Essential marketing components      | Stable |
+| [marketing/media](/interfaces/marketing/media/)       | 1.0     | Rich media components for marketing | Stable |
+| [documentation/core](/interfaces/documentation/core/) | 1.0     | Documentation site components       | Stable |
 
 ## Contributing
 
@@ -153,14 +244,18 @@ We welcome proposals for new interfaces or improvements to existing ones. See ou
 ```
 /
 ├── interfaces/          # 🟢 Stable interfaces (≥1.0.0)
-│   ├── marketing/
-│   │   ├── marketing-v1.0.js
-│   │   └── CHANGELOG.md
-│   └── documentation/
-│       ├── documentation-v1.0.js
-│       └── CHANGELOG.md
+│   ├── marketing/       # Marketing domain
+│   │   ├── core/        # Core concept
+│   │   │   ├── marketing-core-v1.0.js
+│   │   │   └── CHANGELOG.md
+│   │   └── media/       # Media concept
+│   │       ├── marketing-media-v1.0.js
+│   │       └── CHANGELOG.md
+│   └── documentation/   # Documentation domain
+│       └── core/        # Core concept
+│           ├── documentation-core-v1.0.js
+│           └── CHANGELOG.md
 ├── drafts/              # 🟠 0.x proposals
-├── extensions/          # 🔗 JSON pointers to 3rd-party repos
 ├── schema/              # JSON Schema (validation)
 └── docs/                # Documentation
     ├── concepts/        # Conceptual explanations
@@ -170,7 +265,7 @@ We welcome proposals for new interfaces or improvements to existing ones. See ou
 
 ## License
 
-MIT – because ideas should travel faster than lawyers.
+MIT
 
 ---
 
