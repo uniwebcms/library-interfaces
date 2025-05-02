@@ -158,5 +158,5 @@ Interfaces follow this versioning timeline:
 
 - [GLOSSARY.md](./GLOSSARY.md) - Definitions of key terms
 - [REPOSITORY_STRUCTURE.md](./REPOSITORY_STRUCTURE.md) - How interfaces are organized
-- [GOVERNANCE_UNIFIED.md](./GOVERNANCE_UNIFIED.md) - Governance process
+- [GOVERNANCE.md](./GOVERNANCE.md) - Governance process
 - [INTERFACE_SPECIFICATION.md](./INTERFACE_SPECIFICATION.md) - How to specify interfaces

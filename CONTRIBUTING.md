@@ -52,6 +52,7 @@ For new interfaces:
 
 1. Fork the repository
 2. Create your interface following the repository structure:
+
    ```
    /drafts/
      /[domain]/
@@ -72,8 +73,8 @@ export default {
       description: "What this component represents",
       category: "Component Category",
       presets: {
-        "preset1": "Brief explanation of purpose",
-        "preset2": "Brief explanation of purpose",
+        preset1: "Brief explanation of purpose",
+        preset2: "Brief explanation of purpose",
       },
     },
     // Additional components...
@@ -263,5 +264,5 @@ We welcome contributions from both content creators and developers to ensure int
 
 - [GLOSSARY.md](./GLOSSARY.md) - Definitions of key terms
 - [REPOSITORY_STRUCTURE.md](./REPOSITORY_STRUCTURE.md) - How interfaces are organized
-- [GOVERNANCE_UNIFIED.md](./GOVERNANCE_UNIFIED.md) - Governance process
+- [GOVERNANCE.md](./GOVERNANCE.md) - Governance process
 - [VERSION_STRATEGY.md](./docs/governance/VERSION_STRATEGY.md) - Versioning approach

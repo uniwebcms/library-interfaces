@@ -12,11 +12,11 @@ Our naming approach balances simplicity and clarity, focusing on how content cre
 
 Components should be named for the specific type of content they present, not their visual structure:
 
-| ✅ Good        | ❌ Avoid        | Why                                              |
-| -------------- | --------------- | ------------------------------------------------ |
-| `Hero`         | `Banner`        | "Hero" represents a specific marketing purpose   |
-| `Features`     | `Grid`          | "Features" describes content purpose, not layout |
-| `Testimonials` | `Carousel`      | "Testimonials" defines what content to expect    |
+| ✅ Good        | ❌ Avoid   | Why                                              |
+| -------------- | ---------- | ------------------------------------------------ |
+| `Hero`         | `Banner`   | "Hero" represents a specific marketing purpose   |
+| `Features`     | `Grid`     | "Features" describes content purpose, not layout |
+| `Testimonials` | `Carousel` | "Testimonials" defines what content to expect    |
 
 Component names should immediately communicate what type of content belongs in them, enabling content creators to work without thinking about implementation details.
 
@@ -24,11 +24,11 @@ Component names should immediately communicate what type of content belongs in t
 
 Components should use nouns that are specific to their domain:
 
-| ✅ Domain-Specific | ❌ Generic    | Why                                           |
-| ------------------ | ------------ | --------------------------------------------- |
-| `Pricing`          | `Table`      | "Pricing" indicates e-commerce purpose        |
-| `Team`             | `Cards`      | "Team" defines organizational content         |
-| `CourseOutline`    | `List`       | "CourseOutline" indicates educational purpose |
+| ✅ Domain-Specific | ❌ Generic | Why                                           |
+| ------------------ | ---------- | --------------------------------------------- |
+| `Pricing`          | `Table`    | "Pricing" indicates e-commerce purpose        |
+| `Team`             | `Cards`    | "Team" defines organizational content         |
+| `CourseOutline`    | `List`     | "CourseOutline" indicates educational purpose |
 
 When selecting names, imagine how content creators would naturally describe what they're trying to communicate.
 
@@ -116,6 +116,34 @@ When similar preset concepts apply to multiple components, use consistent naming
 
 This creates a predictable vocabulary for content creators.
 
+## Examples from Real Interfaces
+
+### Marketing Interface Components
+
+- `Hero` - Primary attention-grabbing section at the top of a page
+  - Presets: `brand`, `product`, `campaign`, `minimal`
+- `Features` - Highlights product or service features and capabilities
+  - Presets: `benefits`, `capabilities`, `process`
+- `CTA` - Call-to-action element that drives specific user conversions
+  - Presets: `primary`, `newsletter`, `demo`, `contact`
+- `Testimonials` - Customer quotes and success stories
+  - Presets: `featured`, `grid`, `carousel`, `minimal`
+- `Pricing` - Product or service pricing information
+  - Presets: `plans`, `packages`, `comparison`
+- `Team` - Team member profiles and information
+  - Presets: `leadership`, `department`, `featured`, `full`
+
+### Documentation Interface Components
+
+- `Document` - Main documentation content
+  - Presets: `standard`, `plain`
+- `APIReference` - Technical API documentation
+  - Presets: `standard`, `endpoints`, `functions`
+- `CodeExample` - Executable code examples with explanations
+  - Presets: `standard`, `interactive`, `tutorial`
+- `Tutorial` - Structured learning content with defined objectives
+  - Presets: `standard`, `quickstart`, `project`
+
 ## Anti-Patterns to Avoid
 
 ### 1. Generic UI Pattern Names
@@ -150,6 +178,16 @@ Generic UI pattern names make content creators think in terms of presentation ra
 
 ✅ **Instead:** `Features` component with `product`, `service`, and `platform` presets
 
+## When to Use More Specific Component Names
+
+While simpler names with presets are generally preferred, more specific component names may be appropriate when:
+
+1. **The content structure is fundamentally different** - Not just the presentation but the actual content elements, relationships, or semantics differ significantly
+2. **The component serves a very specific domain purpose** - The component is so specialized that a generic name would be confusing
+3. **The component combines multiple concepts** - The component represents a complex composite of other concepts
+
+However, even in these cases, first consider whether presets could handle the variation before creating a new component name.
+
 ## Practical Tests for Good Names
 
 ### The Communication Purpose Test
@@ -163,6 +201,17 @@ Can variations of this component be handled through presets, or are the differen
 ### The Redesign Test
 
 If you completely redesigned the visual presentation, would the component name still make sense?
+
+## Conclusion
+
+Effective component naming focuses on content purpose, not implementation details. By using simple, clear, domain-specific names with well-defined presets, we create a component system that:
+
+1. Makes intuitive sense to content creators
+2. Gives developers implementation freedom
+3. Creates a shared language between content and code
+4. Scales effectively as the system grows
+
+Remember: Component names should reflect how content creators think about their content, while presets handle variations in presentation and purpose.
 
 ## See Also
 

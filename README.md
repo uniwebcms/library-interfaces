@@ -183,10 +183,10 @@ export default {
       description: "Primary attention-grabbing section",
       category: "Brand Presentation",
       presets: {
-        "brand": "Emphasizes company identity and brand positioning",
-        "product": "Focuses on product value proposition and benefits",
-        "campaign": "Highlights special campaign or promotion",
-        "minimal": "Streamlined, text-focused presentation",
+        brand: "Emphasizes company identity and brand positioning",
+        product: "Focuses on product value proposition and benefits",
+        campaign: "Highlights special campaign or promotion",
+        minimal: "Streamlined, text-focused presentation",
       },
     },
 
@@ -221,8 +221,8 @@ For more details on versioning, see [VERSION_STRATEGY.md](./docs/governance/VERS
 
 ## Available Interfaces
 
-| Interface                                             | Version | Purpose                             | Status |
-| ----------------------------------------------------- | ------- | ----------------------------------- | ------ |
+| Interface                                                   | Version | Purpose                             | Status |
+| ----------------------------------------------------------- | ------- | ----------------------------------- | ------ |
 | [marketing/core](/interfaces/marketing/1.0.0/core/)         | 1.0.0   | Essential marketing components      | Stable |
 | [marketing/media](/interfaces/marketing/1.0.0/media/)       | 1.0.0   | Rich media components for marketing | Stable |
 | [documentation/core](/interfaces/documentation/1.0.0/core/) | 1.0.0   | Documentation site components       | Stable |
@@ -282,7 +282,7 @@ For more details on the repository structure, see [REPOSITORY_STRUCTURE.md](./RE
 - [GLOSSARY.md](./GLOSSARY.md) - Definitions of key terms
 - [REPOSITORY_STRUCTURE.md](./REPOSITORY_STRUCTURE.md) - How interfaces are organized
 - [INTERFACE_SPECIFICATION.md](./INTERFACE_SPECIFICATION.md) - How to specify interfaces
-- [GOVERNANCE_UNIFIED.md](./GOVERNANCE_UNIFIED.md) - Interface lifecycle and governance
+- [GOVERNANCE.md](./GOVERNANCE.md) - Interface lifecycle and governance
 - [VERSION_STRATEGY.md](./docs/governance/VERSION_STRATEGY.md) - Versioning approach
 - [NAMING_CONVENTIONS.md](./NAMING_CONVENTIONS.md) - Component and preset naming guidelines
 - [CONTRIBUTING.md](./CONTRIBUTING.md) - How to contribute

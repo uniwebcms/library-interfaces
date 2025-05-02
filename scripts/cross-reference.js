@@ -19,7 +19,7 @@ const config = {
     'GLOSSARY.md',
     'REPOSITORY_STRUCTURE.md',
     'INTERFACE_SPECIFICATION.md',
-    'GOVERNANCE_UNIFIED.md',
+    'GOVERNANCE.md',
     'NAMING_CONVENTIONS.md',
     'CONTRIBUTING.md',
   ],
@@ -41,19 +41,19 @@ const config = {
     'GLOSSARY.md': [
       'REPOSITORY_STRUCTURE.md',
       'VERSION_STRATEGY.md',
-      'GOVERNANCE_UNIFIED.md',
+      'GOVERNANCE.md',
     ],
     'REPOSITORY_STRUCTURE.md': [
       'GLOSSARY.md',
       'VERSION_STRATEGY.md',
-      'GOVERNANCE_UNIFIED.md',
+      'GOVERNANCE.md',
     ],
     'INTERFACE_SPECIFICATION.md': [
       'GLOSSARY.md',
       'REPOSITORY_STRUCTURE.md',
       'VERSION_STRATEGY.md',
     ],
-    'GOVERNANCE_UNIFIED.md': [
+    'GOVERNANCE.md': [
       'GLOSSARY.md',
       'CONTRIBUTING.md',
       'VERSION_STRATEGY.md',
@@ -66,14 +66,14 @@ const config = {
     'CONTRIBUTING.md': [
       'GLOSSARY.md',
       'REPOSITORY_STRUCTURE.md',
-      'GOVERNANCE_UNIFIED.md',
+      'GOVERNANCE.md',
       'VERSION_STRATEGY.md',
       'NAMING_CONVENTIONS.md',
     ],
     'VERSION_STRATEGY.md': [
       'GLOSSARY.md',
       'REPOSITORY_STRUCTURE.md',
-      'GOVERNANCE_UNIFIED.md',
+      'GOVERNANCE.md',
       'INTERFACE_SPECIFICATION.md',
     ],
   }
