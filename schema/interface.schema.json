@@ -1,52 +1,93 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Library Interface Schema",
-  "description": "Schema for defining Library Interfaces",
+  "title": "Library Interface Definition",
+  "description": "Schema for validating Library Interface definitions that establish semantic component standards",
   "type": "object",
   "required": ["description", "category", "version", "components"],
   "properties": {
     "description": {
       "type": "string",
-      "description": "Description of the interface's purpose"
+      "description": "Clear description of the interface's purpose and domain scope",
+      "minLength": 10
     },
     "category": {
       "type": "string",
-      "description": "Domain category (marketing, documentation, etc.)"
+      "description": "Domain category (e.g., marketing, documentation, ecommerce) that groups related interfaces",
+      "pattern": "^[a-z][a-z0-9-]*$"
     },
     "version": {
       "type": "string",
       "pattern": "^\\d+\\.\\d+\\.\\d+$",
-      "description": "Semantic version of the interface"
+      "description": "Semantic version of the interface following SemVer convention (MAJOR.MINOR.PATCH)"
     },
     "components": {
       "type": "object",
-      "description": "Component definitions",
+      "description": "Set of semantic components defined by this interface",
       "additionalProperties": {
         "type": "object",
         "required": ["description", "category", "presets"],
         "properties": {
           "description": {
             "type": "string",
-            "description": "Description of the component's purpose"
+            "description": "Clear description of the component's communication purpose",
+            "minLength": 10
           },
           "category": {
             "type": "string",
-            "description": "Component category within the interface"
+            "description": "Semantic category within the interface for grouping related components",
+            "minLength": 2
           },
           "presets": {
             "type": "object",
-            "description": "Preset variations of the component",
+            "description": "Named preset variations representing different content approaches for this component",
             "additionalProperties": {
               "type": "string",
-              "description": "Description of the preset's purpose"
+              "description": "Description of the preset's specific content purpose",
+              "minLength": 5
             },
             "minProperties": 1
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Optional additional metadata about the component"
           }
         },
         "additionalProperties": false
       },
       "minProperties": 1
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Optional additional metadata about the interface"
     }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "examples": [
+    {
+      "description": "Essential components for marketing websites",
+      "category": "marketing",
+      "version": "1.0.0",
+      "components": {
+        "Hero": {
+          "description": "Primary attention-grabbing section at the top of a page that sets the tone and focus",
+          "category": "Brand Presentation",
+          "presets": {
+            "brand": "Emphasizes company identity, values, and overall brand positioning",
+            "product": "Focuses on product value proposition, features, and benefits",
+            "campaign": "Highlights special campaign, promotion, or time-sensitive offering",
+            "minimal": "Presents streamlined, text-focused messaging without complex visual elements"
+          }
+        },
+        "Features": {
+          "description": "Highlights product or service features and capabilities to communicate value",
+          "category": "Value Communication",
+          "presets": {
+            "benefits": "Communicates value-focused outcomes that customers gain",
+            "capabilities": "Showcases technical abilities and functional aspects",
+            "process": "Illustrates sequential steps or workflow showing how something operates"
+          }
+        }
+      }
+    }
+  ]
 }
