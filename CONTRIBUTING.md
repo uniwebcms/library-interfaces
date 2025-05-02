@@ -51,21 +51,30 @@ Before creating a new interface:
 For new interfaces:
 
 1. Fork the repository
-2. Create your interface in `drafts/[domain]-v0.[minor].js`
+2. Create your interface following the repository structure:
+   ```
+   /drafts/
+     /[domain]/
+       /0.1.0/
+         /[concept]/
+           [domain]-[concept].js
+   ```
+
 3. Follow the standard interface format:
 
 ```js
 export default {
-  id: "domain-v0.1",
-  version: "0.1.0",
   description: "Clear description of domain purpose",
+  category: "domain-category", // Matches the domain name
+  version: "0.1.0",
   components: {
     ComponentName: {
       description: "What this component represents",
-      presets: [
-        "preset1", // Brief explanation of purpose
-        "preset2", // Brief explanation of purpose
-      ],
+      category: "Component Category",
+      presets: {
+        "preset1": "Brief explanation of purpose",
+        "preset2": "Brief explanation of purpose",
+      },
     },
     // Additional components...
   },
@@ -75,7 +84,7 @@ export default {
 4. Ensure your interface passes validation:
 
 ```bash
-npm run validate-interface ./drafts/domain-v0.1.js
+npm run validate-interface ./drafts/[domain]/0.1.0/[concept]/[domain]-[concept].js
 ```
 
 5. Create a README.md in your PR explaining:
@@ -115,7 +124,7 @@ When an interface is ready for stable status:
 1. Ensure it has received at least 3 approvals from community members
 2. Have at least one reference implementation (even if minimal)
 3. Complete all documentation
-4. Move from `drafts/` to `interfaces/[domain]/` directory
+4. Move from `drafts/` to `interfaces/[domain]/1.0.0/[concept]/` directory
 5. Update version to 1.0.0
 6. Create a CHANGELOG.md file
 7. Tag the release
@@ -178,6 +187,8 @@ Example acceptable changes for `marketing-v1.1`:
 
 **Mnemonic:** describe **what** it is, not **how** it looks.
 
+For complete naming guidelines, see [NAMING_CONVENTIONS.md](./NAMING_CONVENTIONS.md).
+
 ### Documentation
 
 Every interface should include:
@@ -205,7 +216,7 @@ Example pointer file (`extensions/acme-marketing-v1.0.json`):
   "description": "ACME Corp's enhanced marketing interface",
   "repository": "https://github.com/acme/interfaces",
   "path": "/marketing/acme-marketing-v1.0.js",
-  "extends": ["marketing-v1.0"]
+  "extends": ["marketing/1.0.0/core"]
 }
 ```
 
@@ -247,3 +258,10 @@ If you have questions about the contribution process, please:
 3. Ask in the community forum
 
 We welcome contributions from both content creators and developers to ensure interfaces strike the right balance between semantic clarity and implementation flexibility.
+
+## See Also
+
+- [GLOSSARY.md](./GLOSSARY.md) - Definitions of key terms
+- [REPOSITORY_STRUCTURE.md](./REPOSITORY_STRUCTURE.md) - How interfaces are organized
+- [GOVERNANCE_UNIFIED.md](./GOVERNANCE_UNIFIED.md) - Governance process
+- [VERSION_STRATEGY_REVISED.md](./docs/governance/VERSION_STRATEGY_REVISED.md) - Versioning approach

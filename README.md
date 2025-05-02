@@ -53,8 +53,8 @@ Concepts are designed to work together while maintaining non-overlapping compone
 
 Each interface evolves through **versions** that follow semantic versioning:
 
-- Major versions (e.g., `2.0`) may introduce breaking changes
-- Minor versions (e.g., `1.1`) add new components or presets
+- Major versions (e.g., `2.0.0`) may introduce breaking changes
+- Minor versions (e.g., `1.1.0`) add new components or presets
 - Patch versions (e.g., `1.0.1`) make documentation improvements
 
 ## Interface Specification Convention
@@ -62,22 +62,24 @@ Each interface evolves through **versions** that follow semantic versioning:
 When specifying which interfaces your library implements, use the following format:
 
 ```
-domain/concept/version
+domain/version/concept
 ```
 
 For example:
 
 ```json
-"interfaces": ["marketing/1.0/core"]
+"interfaces": ["marketing/1.0.0/core"]
 ```
 
 To specify multiple concepts from the same domain and version, you can use grouped notation:
 
 ```json
-"interfaces": ["marketing/1.0/{core,media}"]
+"interfaces": ["marketing/1.0.0/{core,media}"]
 ```
 
-This clearly indicates that your library implements both the `core` and `media` concepts from the `marketing` domain at version `1.0`.
+This clearly indicates that your library implements both the `core` and `media` concepts from the `marketing` domain at version `1.0.0`.
+
+For more details on specification formats, see [INTERFACE_SPECIFICATION.md](./INTERFACE_SPECIFICATION.md).
 
 ## Progressive Implementation
 
@@ -89,12 +91,12 @@ Library developers can take a progressive approach to implementing interfaces:
 
 For example, a library for marketing websites could start by implementing:
 
-- `marketing/1.0/core` - Essential marketing components (Hero, Features, CTA)
+- `marketing/1.0.0/core` - Essential marketing components (Hero, Features, CTA)
 
 Then progressively add specialized concepts:
 
-- `marketing/1.0/media` - Rich media components (MediaGallery, VideoFeature)
-- `marketing/1.0/blog` - Blogging components (ArticleListing, PostDetail)
+- `marketing/1.0.0/media` - Rich media components (MediaGallery, VideoFeature)
+- `marketing/1.0.0/blog` - Blogging components (ArticleListing, PostDetail)
 
 This approach allows developers to:
 
@@ -119,7 +121,6 @@ The component architecture uses a layered model:
 Before using the registry, you'll need to install the Uniweb CLI:
 
 ```bash
-# Install the Uniweb CLI globally
 npm install -g @uniwebcms/toolkit
 ```
 
@@ -132,19 +133,19 @@ This makes the `uniweb` command available in your terminal.
 uniweb list interfaces
 
 # Output
-marketing/1.0/core     Essential marketing site components
-marketing/1.0/media    Rich media components for marketing
-documentation/1.0/core Standard documentation site components
+marketing/1.0.0/core     Essential marketing site components
+marketing/1.0.0/media    Rich media components for marketing
+documentation/1.0.0/core Standard documentation site components
 ```
 
 ### Get Interface Details
 
 ```bash
 # View details of a specific interface
-uniweb get interface marketing/core/1.0
+uniweb get interface marketing/1.0.0/core
 
 # Output
-ID: marketing/core/1.0
+ID: marketing/1.0.0/core
 Version: 1.0.0
 Description: Essential marketing site components
 
@@ -158,13 +159,13 @@ Components:
 
 ```bash
 # Check if a library correctly implements an interface
-uniweb validate-library my-marketing-components marketing/1.0/core
+uniweb validate-library my-marketing-components marketing/1.0.0/core
 
 # Check if a library implements multiple interfaces
-uniweb validate-library my-marketing-components marketing/1.0/{core,media}
+uniweb validate-library my-marketing-components marketing/1.0.0/{core,media}
 
 # Check if content uses valid components from an interface
-uniweb validate-content ./content marketing/1.0/core
+uniweb validate-content ./content marketing/1.0.0/core
 ```
 
 ## Interface Structure
@@ -172,20 +173,20 @@ uniweb validate-content ./content marketing/1.0/core
 Each interface defines a set of semantic components and their presets:
 
 ```js
-// marketing/core/marketing-core-v1.0.js
+// marketing/1.0.0/core/marketing-core.js
 export default {
   description: "Essential marketing site components",
-  version: "1.0.0",
   category: "marketing",
+  version: "1.0.0",
   components: {
     Hero: {
       description: "Primary attention-grabbing section",
       category: "Brand Presentation",
       presets: {
-        brand: "Emphasizes company identity and brand positioning",
-        product: "Focuses on product value proposition and benefits",
-        campaign: "Highlights special campaign or promotion",
-        minimal: "Streamlined, text-focused presentation",
+        "brand": "Emphasizes company identity and brand positioning",
+        "product": "Focuses on product value proposition and benefits",
+        "campaign": "Highlights special campaign or promotion",
+        "minimal": "Streamlined, text-focused presentation",
       },
     },
 
@@ -209,24 +210,26 @@ The validation system enforces this rule to maintain modularity.
 | Version type      | Allowed changes                                            | Guaranteed to work with | Requires markdown edits? |
 | ----------------- | ---------------------------------------------------------- | ----------------------- | ------------------------ |
 | **MAJOR** `2.0.0` | Remove or rename components/presets; restructure hierarchy | nothing older           | maybe ✔                  |
-| **MINOR** `1.1.0` | **Only add** components or presets                         | all `1.x`               | never ✖                  |
+| **MINOR** `1.1.0` | **Only add** components or presets                         | all `1.x.y`             | never ✖                  |
 | **PATCH** `1.0.1` | Fix typos, docs, non‑breaking tweaks                       | same major/minor        | never ✖                  |
 
 - If your proposal _breaks_ existing markdown, it's a **MAJOR**.
 - If it's purely additive, it's a **MINOR**.
 - Docs only? **PATCH**.
 
+For more details on versioning, see [VERSION_STRATEGY_REVISED.md](./docs/governance/VERSION_STRATEGY_REVISED.md).
+
 ## Available Interfaces
 
 | Interface                                             | Version | Purpose                             | Status |
 | ----------------------------------------------------- | ------- | ----------------------------------- | ------ |
-| [marketing/core](/interfaces/marketing/core/)         | 1.0     | Essential marketing components      | Stable |
-| [marketing/media](/interfaces/marketing/media/)       | 1.0     | Rich media components for marketing | Stable |
-| [documentation/core](/interfaces/documentation/core/) | 1.0     | Documentation site components       | Stable |
+| [marketing/core](/interfaces/marketing/1.0.0/core/)         | 1.0.0   | Essential marketing components      | Stable |
+| [marketing/media](/interfaces/marketing/1.0.0/media/)       | 1.0.0   | Rich media components for marketing | Stable |
+| [documentation/core](/interfaces/documentation/1.0.0/core/) | 1.0.0   | Documentation site components       | Stable |
 
 ## Contributing
 
-We welcome proposals for new interfaces or improvements to existing ones. See our [Contributing Guide](CONTRIBUTING.md) for the process.
+We welcome proposals for new interfaces or improvements to existing ones. See our [CONTRIBUTING_REVISED.md](CONTRIBUTING_REVISED.md) for the process.
 
 ## Naming Playbook
 
@@ -239,29 +242,50 @@ We welcome proposals for new interfaces or improvements to existing ones. See ou
 
 **Mnemonic:** describe **what** it is, not **how** it looks.
 
+For complete naming guidelines, see [NAMING_CONVENTIONS.md](./NAMING_CONVENTIONS.md).
+
 ## Repository Structure
 
 ```
 /
 ├── interfaces/          # 🟢 Stable interfaces (≥1.0.0)
 │   ├── marketing/       # Marketing domain
-│   │   ├── core/        # Core concept
-│   │   │   ├── marketing-core-v1.0.js
-│   │   │   └── CHANGELOG.md
-│   │   └── media/       # Media concept
-│   │       ├── marketing-media-v1.0.js
-│   │       └── CHANGELOG.md
+│   │   ├── 1.0.0/       # Version 1.0.0
+│   │   │   ├── core/    # Core concept
+│   │   │   │   └── marketing-core.js
+│   │   │   └── media/   # Media concept
+│   │   │       └── marketing-media.js
+│   │   └── 1.0.1/       # Patch version
+│   │       └── ...
 │   └── documentation/   # Documentation domain
-│       └── core/        # Core concept
-│           ├── documentation-core-v1.0.js
-│           └── CHANGELOG.md
+│       └── 1.0.0/       # Version 1.0.0
+│           ├── core/    # Core concept
+│           │   └── documentation-core.js
+│           ├── technical/
+│           │   └── documentation-technical.js
+│           └── learning/
+│               └── documentation-learning.js
 ├── drafts/              # 🟠 0.x proposals
+├── extensions/          # Extension pointers
 ├── schema/              # JSON Schema (validation)
+├── scripts/             # Build scripts
 └── docs/                # Documentation
-    ├── concepts/        # Conceptual explanations
+    ├── blog/            # Conceptual articles
     ├── guidelines/      # Interface design guidelines
     └── governance/      # Process documentation
 ```
+
+For more details on the repository structure, see [REPOSITORY_STRUCTURE.md](./REPOSITORY_STRUCTURE.md).
+
+## Key Documentation
+
+- [GLOSSARY.md](./GLOSSARY.md) - Definitions of key terms
+- [REPOSITORY_STRUCTURE.md](./REPOSITORY_STRUCTURE.md) - How interfaces are organized
+- [INTERFACE_SPECIFICATION.md](./INTERFACE_SPECIFICATION.md) - How to specify interfaces
+- [GOVERNANCE_UNIFIED.md](./GOVERNANCE_UNIFIED.md) - Interface lifecycle and governance
+- [VERSION_STRATEGY_REVISED.md](./docs/governance/VERSION_STRATEGY_REVISED.md) - Versioning approach
+- [NAMING_CONVENTIONS.md](./NAMING_CONVENTIONS.md) - Component and preset naming guidelines
+- [CONTRIBUTING_REVISED.md](./CONTRIBUTING_REVISED.md) - How to contribute
 
 ## License
 

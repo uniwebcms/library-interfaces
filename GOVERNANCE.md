@@ -1,13 +1,17 @@
-# Interface Governance
+# Interface Lifecycle and Governance
 
-This document outlines the governance process for Library Interfaces, ensuring quality, utility, and sustainability for the ecosystem.
+This document outlines the lifecycle of Library Interfaces and the governance process that ensures their quality, utility, and sustainability. It combines and supersedes the previous `GOVERNANCE.md` and `interface-lifecycle.md` documents.
 
-## Interface Lifecycle
+## Interface Lifecycle Stages
 
-Library Interfaces follow a defined lifecycle:
-
-```
-Proposed → Draft → Release Candidate → Stable → Extended/Deprecated → Retired
+```mermaid
+graph LR;
+    A[Proposed] --> B[Draft];
+    B --> C[Release Candidate];
+    C --> D[Stable];
+    D --> E[Extended];
+    D --> F[Deprecated];
+    F --> G[Retired];
 ```
 
 ### 1. Proposed
@@ -85,7 +89,7 @@ Proposed → Draft → Release Candidate → Stable → Extended/Deprecated → 
    - Is there sufficient demand for standardization in this domain?
 
 3. **Create initial draft** if feedback is positive
-   - Create the interface file in `drafts/` directory
+   - Create the interface file in `drafts/` directory following the structure in [REPOSITORY_STRUCTURE.md](./REPOSITORY_STRUCTURE.md)
    - Follow the standard interface format
    - Include thorough documentation
    - Submit as a Pull Request
@@ -144,7 +148,7 @@ Proposed → Draft → Release Candidate → Stable → Extended/Deprecated → 
 
 2. **Implementation and review**
 
-   - Create new interface file with updated version
+   - Create new interface file with updated version following [VERSION_STRATEGY.md](./docs/governance/VERSION_STRATEGY.md)
    - Must follow rules for minor versions (backward compatible)
    - Review process similar to initial approval but faster
 
@@ -251,6 +255,58 @@ The extension registry allows organizations to:
 - Must include clear documentation
 - No approval of the interface content itself (that's up to the maintaining organization)
 
+## Practical Governance Examples
+
+### Example 1: New Interface Proposal
+
+**Step 1:** Issue opened proposing "portfolio-v0.1" interface
+
+**Step 2:** Community discussion for 10 days
+
+**Step 3:** Consensus reached that portfolio interface is valuable
+
+**Step 4:** Initial draft created in `drafts/portfolio/0.1.0/core/portfolio-core.js`
+
+**Step 5:** Several iterations based on feedback
+
+**Step 6:** Reference implementation created
+
+**Step 7:** Release candidate at `drafts/portfolio/0.9.0/core/portfolio-core.js`
+
+**Step 8:** Final review period
+
+**Step 9:** Promotion to `interfaces/portfolio/1.0.0/core/portfolio-core.js`
+
+### Example 2: Minor Version Update
+
+**Step 1:** Issue proposing new components for marketing interface
+
+**Step 2:** Brief discussion period (1 week)
+
+**Step 3:** New components implemented in `interfaces/marketing/1.1.0/` directory
+
+**Step 4:** Review and approval
+
+**Step 5:** Release of `marketing/1.1.0`
+
+### Example 3: Major Version Update
+
+**Step 1:** RFC for marketing-v2.0 with significant improvements
+
+**Step 2:** Extended discussion (3 weeks)
+
+**Step 3:** Draft of new major version in `drafts/marketing/2.0.0/` directory
+
+**Step 4:** Reference implementation updated
+
+**Step 5:** Migration guide written
+
+**Step 6:** Final review and approval
+
+**Step 7:** Release in `interfaces/marketing/2.0.0/` directory
+
+**Step 8:** Previous version marked as deprecated but still available
+
 ## Governance Principles
 
 1. **Transparency** - All decisions happen in the open
@@ -267,3 +323,9 @@ By following these governance processes, we ensure that Library Interfaces remai
 - Stable over time
 - Open to improvements
 - Properly maintained
+
+## See Also
+
+- [GLOSSARY.md](./GLOSSARY.md) - Definitions of key terms
+- [CONTRIBUTING.md](./CONTRIBUTING.md) - How to contribute
+- [VERSION_STRATEGY.md](./docs/governance/VERSION_STRATEGY.md) - Versioning approach

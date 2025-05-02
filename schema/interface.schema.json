@@ -44,9 +44,9 @@
           }
         },
         "additionalProperties": false
-}
       },
       "minProperties": 1
     }
   },
   "additionalProperties": false
+}
