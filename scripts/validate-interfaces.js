@@ -68,41 +68,67 @@ async function validateInterfaces() {
     try {
       const draftsDir = path.join("drafts");
       const draftStat = await fs.stat(draftsDir);
-      
+
       if (draftStat.isDirectory()) {
         console.log(chalk.blue("\nValidating draft interfaces..."));
-        const draftDomains = await fs.readdir(draftsDir, { withFileTypes: true });
-        
-        for (const draftDomain of draftDomains.filter(entry => entry.isDirectory())) {
+        const draftDomains = await fs.readdir(draftsDir, {
+          withFileTypes: true,
+        });
+
+        for (const draftDomain of draftDomains.filter((entry) =>
+          entry.isDirectory()
+        )) {
           const draftDomainPath = path.join(draftsDir, draftDomain.name);
-          const draftVersions = await fs.readdir(draftDomainPath, { withFileTypes: true });
-          
-          for (const draftVersion of draftVersions.filter(entry => entry.isDirectory())) {
-            const draftVersionPath = path.join(draftDomainPath, draftVersion.name);
-            const draftConcepts = await fs.readdir(draftVersionPath, { withFileTypes: true });
-            
-            for (const draftConcept of draftConcepts.filter(entry => entry.isDirectory())) {
-              const draftConceptPath = path.join(draftVersionPath, draftConcept.name);
+          const draftVersions = await fs.readdir(draftDomainPath, {
+            withFileTypes: true,
+          });
+
+          for (const draftVersion of draftVersions.filter((entry) =>
+            entry.isDirectory()
+          )) {
+            const draftVersionPath = path.join(
+              draftDomainPath,
+              draftVersion.name
+            );
+            const draftConcepts = await fs.readdir(draftVersionPath, {
+              withFileTypes: true,
+            });
+
+            for (const draftConcept of draftConcepts.filter((entry) =>
+              entry.isDirectory()
+            )) {
+              const draftConceptPath = path.join(
+                draftVersionPath,
+                draftConcept.name
+              );
               const draftFiles = await fs.readdir(draftConceptPath);
-              
-              for (const file of draftFiles.filter(f => f.endsWith(".js"))) {
+
+              for (const file of draftFiles.filter((f) => f.endsWith(".js"))) {
                 const filePath = path.join(draftConceptPath, file);
-                
+
                 // Create a draft-specific component tracking set
-                if (!domainComponents[`draft/${draftDomain.name}/${draftVersion.name}`]) {
-                  domainComponents[`draft/${draftDomain.name}/${draftVersion.name}`] = new Set();
+                if (
+                  !domainComponents[
+                    `draft/${draftDomain.name}/${draftVersion.name}`
+                  ]
+                ) {
+                  domainComponents[
+                    `draft/${draftDomain.name}/${draftVersion.name}`
+                  ] = new Set();
                 }
-                
+
                 const valid = await validateInterfaceFile(
                   filePath,
                   validate,
                   draftDomain.name,
                   draftVersion.name,
                   draftConcept.name,
-                  domainComponents[`draft/${draftDomain.name}/${draftVersion.name}`],
+                  domainComponents[
+                    `draft/${draftDomain.name}/${draftVersion.name}`
+                  ],
                   true
                 );
-                
+
                 if (!valid) {
                   allValid = false;
                 }
@@ -113,8 +139,10 @@ async function validateInterfaces() {
       }
     } catch (err) {
       // No drafts directory or other error, just continue
-      if (err.code !== 'ENOENT') {
-        console.log(chalk.yellow(`Note: Could not validate drafts: ${err.message}`));
+      if (err.code !== "ENOENT") {
+        console.log(
+          chalk.yellow(`Note: Could not validate drafts: ${err.message}`)
+        );
       }
     }
 
@@ -124,75 +152,6 @@ async function validateInterfaces() {
     return false;
   }
 }
-
-function extractInterfaceObject(content) {
-  // This is a simplified approach - in a real implementation,
-  // you would use a JavaScript parser
-  const categoryMatch = content.match(/category:\s*["']([^"']+)["']/);
-  const versionMatch = content.match(/version:\s*["']([^"']+)["']/);
-  const descriptionMatch = content.match(/description:\s*["']([^"']+)["']/);
-
-  const components = {};
-  const componentRegex = /(\w+):\s*{[^}]*description:\s*["']([^"']+)["']/g;
-  let match;
-
-  while ((match = componentRegex.exec(content)) !== null) {
-    const [, componentName, description] = match;
-    
-    // Extract category for the component
-    const componentCategoryMatch = content.substring(match.index).match(/category:\s*["']([^"']+)["']/);
-    const componentCategory = componentCategoryMatch ? componentCategoryMatch[1] : "Default";
-    
-    components[componentName] = {
-      description,
-      category: componentCategory,
-      presets: extractPresets(content, componentName),
-    };
-  }
-
-  return {
-    category: categoryMatch ? categoryMatch[1] : "",
-    version: versionMatch ? versionMatch[1] : "",
-    description: descriptionMatch ? descriptionMatch[1] : "",
-    components,
-  };
-}
-
-function extractPresets(content, componentName) {
-  // Simplified extraction of presets
-  const presets = {};
-  
-  // Try to find the presets block for this component
-  const presetsRegex = new RegExp(`${componentName}[^}]*presets:\\s*{([\\s\\S]*?)(?:},|},\\s*\\w+:|}}})`, 'i');
-  const presetsMatch = content.match(presetsRegex);
-  
-  if (presetsMatch && presetsMatch[1]) {
-    // Extract individual preset entries
-    const presetEntries = presetsMatch[1].matchAll(/"([^"]+)":\s*"([^"]+)"/g);
-    
-    for (const presetMatch of presetEntries) {
-      const [, presetName, presetDescription] = presetMatch;
-      presets[presetName] = presetDescription;
-    }
-  }
-
-  return presets;
-}
-
-validateInterfaces()
-  .then((allValid) => {
-    if (allValid) {
-      console.log(chalk.green("✅ All interfaces are valid"));
-      process.exit(0);
-    } else {
-      console.error(chalk.red("❌ Some interfaces failed validation"));
-      process.exit(1);
-    }
-  })
-  .catch((err) => {
-    console.error(chalk.red("Error validating interfaces:"), err);
-    process.exit(1);
-  });
 
 async function validateInterfaceFile(
   filePath,
@@ -289,3 +248,84 @@ async function validateInterfaceFile(
 
     console.log(chalk.green(`✅ ${filePath} is valid`));
     return true;
+  } catch (err) {
+    console.error(chalk.red(`Error validating ${filePath}:`, err));
+    return false;
+  }
+}
+
+function extractInterfaceObject(content) {
+  // This is a simplified approach - in a real implementation,
+  // you would use a JavaScript parser
+  const categoryMatch = content.match(/category:\s*["']([^"']+)["']/);
+  const versionMatch = content.match(/version:\s*["']([^"']+)["']/);
+  const descriptionMatch = content.match(/description:\s*["']([^"']+)["']/);
+
+  const components = {};
+  const componentRegex = /(\w+):\s*{[^}]*description:\s*["']([^"']+)["']/g;
+  let match;
+
+  while ((match = componentRegex.exec(content)) !== null) {
+    const [, componentName, description] = match;
+
+    // Extract category for the component
+    const componentCategoryMatch = content
+      .substring(match.index)
+      .match(/category:\s*["']([^"']+)["']/);
+    const componentCategory = componentCategoryMatch
+      ? componentCategoryMatch[1]
+      : "Default";
+
+    components[componentName] = {
+      description,
+      category: componentCategory,
+      presets: extractPresets(content, componentName),
+    };
+  }
+
+  return {
+    category: categoryMatch ? categoryMatch[1] : "",
+    version: versionMatch ? versionMatch[1] : "",
+    description: descriptionMatch ? descriptionMatch[1] : "",
+    components,
+  };
+}
+
+function extractPresets(content, componentName) {
+  // Simplified extraction of presets
+  const presets = {};
+
+  // Try to find the presets block for this component
+  const presetsRegex = new RegExp(
+    `${componentName}[^}]*presets:\\s*{([\\s\\S]*?)(?:},|},\\s*\\w+:|}}})`,
+    "i"
+  );
+  const presetsMatch = content.match(presetsRegex);
+
+  if (presetsMatch && presetsMatch[1]) {
+    // Extract individual preset entries
+    const presetEntries = presetsMatch[1].matchAll(/"([^"]+)":\s*"([^"]+)"/g);
+
+    for (const presetMatch of presetEntries) {
+      const [, presetName, presetDescription] = presetMatch;
+      presets[presetName] = presetDescription;
+    }
+  }
+
+  return presets;
+}
+
+validateInterfaces()
+  .then((allValid) => {
+    if (allValid) {
+      console.log(chalk.green("✅ All interfaces are valid"));
+      process.exit(0);
+    } else {
+      console.error(chalk.red("❌ Some interfaces failed validation"));
+      process.exit(1);
+    }
+  })
+  .catch((err) => {
+    console.error(chalk.red("Error validating interfaces:"), err);
+    process.exit(1);
+  });
