@@ -68,13 +68,13 @@ domain/concept/version
 For example:
 
 ```json
-"interfaces": ["marketing/core/1.0"]
+"interfaces": ["marketing/1.0/core"]
 ```
 
 To specify multiple concepts from the same domain and version, you can use grouped notation:
 
 ```json
-"interfaces": ["marketing/{core,media}/1.0"]
+"interfaces": ["marketing/1.0/{core,media}"]
 ```
 
 This clearly indicates that your library implements both the `core` and `media` concepts from the `marketing` domain at version `1.0`.
@@ -89,12 +89,12 @@ Library developers can take a progressive approach to implementing interfaces:
 
 For example, a library for marketing websites could start by implementing:
 
-- `marketing/core/1.0` - Essential marketing components (Hero, Features, CTA)
+- `marketing/1.0/core` - Essential marketing components (Hero, Features, CTA)
 
 Then progressively add specialized concepts:
 
-- `marketing/media/1.0` - Rich media components (MediaGallery, VideoFeature)
-- `marketing/blog/1.0` - Blogging components (ArticleListing, PostDetail)
+- `marketing/1.0/media` - Rich media components (MediaGallery, VideoFeature)
+- `marketing/1.0/blog` - Blogging components (ArticleListing, PostDetail)
 
 This approach allows developers to:
 
@@ -132,9 +132,9 @@ This makes the `uniweb` command available in your terminal.
 uniweb list interfaces
 
 # Output
-marketing/core/1.0     Essential marketing site components
-marketing/media/1.0    Rich media components for marketing
-documentation/core/1.0 Standard documentation site components
+marketing/1.0/core     Essential marketing site components
+marketing/1.0/media    Rich media components for marketing
+documentation/1.0/core Standard documentation site components
 ```
 
 ### Get Interface Details
@@ -158,13 +158,13 @@ Components:
 
 ```bash
 # Check if a library correctly implements an interface
-uniweb validate-library my-marketing-components marketing/core/1.0
+uniweb validate-library my-marketing-components marketing/1.0/core
 
 # Check if a library implements multiple interfaces
-uniweb validate-library my-marketing-components marketing/{core,media}/1.0
+uniweb validate-library my-marketing-components marketing/1.0/{core,media}
 
 # Check if content uses valid components from an interface
-uniweb validate-content ./content marketing/core/1.0
+uniweb validate-content ./content marketing/1.0/core
 ```
 
 ## Interface Structure
