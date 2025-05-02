@@ -264,4 +264,4 @@ We welcome contributions from both content creators and developers to ensure int
 - [GLOSSARY.md](./GLOSSARY.md) - Definitions of key terms
 - [REPOSITORY_STRUCTURE.md](./REPOSITORY_STRUCTURE.md) - How interfaces are organized
 - [GOVERNANCE_UNIFIED.md](./GOVERNANCE_UNIFIED.md) - Governance process
-- [VERSION_STRATEGY_REVISED.md](./docs/governance/VERSION_STRATEGY_REVISED.md) - Versioning approach
+- [VERSION_STRATEGY.md](./docs/governance/VERSION_STRATEGY.md) - Versioning approach

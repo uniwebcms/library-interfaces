@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Semantic component standards for content-first development",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "validate": "node scripts/validate-interfaces.js",
     "docs": "node scripts/generate-docs.js",

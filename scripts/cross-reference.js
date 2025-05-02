@@ -7,21 +7,21 @@
  * Usage: node cross-reference.js [--fix]
  */
 
-const fs = require('fs').promises;
-const path = require('path');
-const chalk = require('chalk');
+import fs from "fs".promises;
+import path from "path";
+import chalk from "chalk";
 
 // Configuration
 const config = {
   rootDocs: [
     'README.md',
-    'README_REVISED.md',
+    'README.md',
     'GLOSSARY.md',
     'REPOSITORY_STRUCTURE.md',
     'INTERFACE_SPECIFICATION.md',
     'GOVERNANCE_UNIFIED.md',
     'NAMING_CONVENTIONS.md',
-    'CONTRIBUTING_REVISED.md',
+    'CONTRIBUTING.md',
   ],
   docsDirs: [
     'docs/guidelines',
@@ -30,47 +30,47 @@ const config = {
   ],
   // Expected cross-references between documents
   references: {
-    'README_REVISED.md': [
+    'README.md': [
       'GLOSSARY.md',
       'REPOSITORY_STRUCTURE.md',
       'INTERFACE_SPECIFICATION.md',
-      'VERSION_STRATEGY_REVISED.md',
+      'VERSION_STRATEGY.md',
       'NAMING_CONVENTIONS.md',
-      'CONTRIBUTING_REVISED.md',
+      'CONTRIBUTING.md',
     ],
     'GLOSSARY.md': [
       'REPOSITORY_STRUCTURE.md',
-      'VERSION_STRATEGY_REVISED.md',
+      'VERSION_STRATEGY.md',
       'GOVERNANCE_UNIFIED.md',
     ],
     'REPOSITORY_STRUCTURE.md': [
       'GLOSSARY.md',
-      'VERSION_STRATEGY_REVISED.md',
+      'VERSION_STRATEGY.md',
       'GOVERNANCE_UNIFIED.md',
     ],
     'INTERFACE_SPECIFICATION.md': [
       'GLOSSARY.md',
       'REPOSITORY_STRUCTURE.md',
-      'VERSION_STRATEGY_REVISED.md',
+      'VERSION_STRATEGY.md',
     ],
     'GOVERNANCE_UNIFIED.md': [
       'GLOSSARY.md',
-      'CONTRIBUTING_REVISED.md',
-      'VERSION_STRATEGY_REVISED.md',
+      'CONTRIBUTING.md',
+      'VERSION_STRATEGY.md',
     ],
     'NAMING_CONVENTIONS.md': [
       'GLOSSARY.md',
-      'CONTRIBUTING_REVISED.md',
+      'CONTRIBUTING.md',
       'docs/blog/beyond-ui-patterns.md',
     ],
-    'CONTRIBUTING_REVISED.md': [
+    'CONTRIBUTING.md': [
       'GLOSSARY.md',
       'REPOSITORY_STRUCTURE.md',
       'GOVERNANCE_UNIFIED.md',
-      'VERSION_STRATEGY_REVISED.md',
+      'VERSION_STRATEGY.md',
       'NAMING_CONVENTIONS.md',
     ],
-    'VERSION_STRATEGY_REVISED.md': [
+    'VERSION_STRATEGY.md': [
       'GLOSSARY.md',
       'REPOSITORY_STRUCTURE.md',
       'GOVERNANCE_UNIFIED.md',

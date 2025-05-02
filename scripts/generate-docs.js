@@ -3,8 +3,8 @@
  * Usage: node generate-docs.js
  */
 
-const fs = require("fs").promises;
-const path = require("path");
+import fs from "fs".promises;
+import path from "path";
 
 async function generateDocs() {
   console.log("Generating documentation...");

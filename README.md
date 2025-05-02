@@ -217,7 +217,7 @@ The validation system enforces this rule to maintain modularity.
 - If it's purely additive, it's a **MINOR**.
 - Docs only? **PATCH**.
 
-For more details on versioning, see [VERSION_STRATEGY_REVISED.md](./docs/governance/VERSION_STRATEGY_REVISED.md).
+For more details on versioning, see [VERSION_STRATEGY.md](./docs/governance/VERSION_STRATEGY.md).
 
 ## Available Interfaces
 
@@ -229,7 +229,7 @@ For more details on versioning, see [VERSION_STRATEGY_REVISED.md](./docs/governa
 
 ## Contributing
 
-We welcome proposals for new interfaces or improvements to existing ones. See our [CONTRIBUTING_REVISED.md](CONTRIBUTING_REVISED.md) for the process.
+We welcome proposals for new interfaces or improvements to existing ones. See our [CONTRIBUTING.md](CONTRIBUTING.md) for the process.
 
 ## Naming Playbook
 
@@ -283,9 +283,9 @@ For more details on the repository structure, see [REPOSITORY_STRUCTURE.md](./RE
 - [REPOSITORY_STRUCTURE.md](./REPOSITORY_STRUCTURE.md) - How interfaces are organized
 - [INTERFACE_SPECIFICATION.md](./INTERFACE_SPECIFICATION.md) - How to specify interfaces
 - [GOVERNANCE_UNIFIED.md](./GOVERNANCE_UNIFIED.md) - Interface lifecycle and governance
-- [VERSION_STRATEGY_REVISED.md](./docs/governance/VERSION_STRATEGY_REVISED.md) - Versioning approach
+- [VERSION_STRATEGY.md](./docs/governance/VERSION_STRATEGY.md) - Versioning approach
 - [NAMING_CONVENTIONS.md](./NAMING_CONVENTIONS.md) - Component and preset naming guidelines
-- [CONTRIBUTING_REVISED.md](./CONTRIBUTING_REVISED.md) - How to contribute
+- [CONTRIBUTING.md](./CONTRIBUTING.md) - How to contribute
 
 ## License
 

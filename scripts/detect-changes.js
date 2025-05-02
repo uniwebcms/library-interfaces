@@ -4,8 +4,8 @@
  * Example: node detect-changes.js marketing 1.0.0 1.1.0
  */
 
-const fs = require("fs").promises;
-const path = require("path");
+import fs from "fs".promises;
+import path from "path";
 
 // Get command line arguments
 const [domain, fromVersion, toVersion] = process.argv.slice(2);

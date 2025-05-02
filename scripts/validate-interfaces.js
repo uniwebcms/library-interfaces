@@ -3,11 +3,11 @@
  * Usage: node validate-interfaces.js
  */
 
-const fs = require("fs").promises;
-const path = require("path");
-const Ajv = require("ajv");
+import fs from "fs".promises;
+import path from "path";
+import Ajv from "ajv";
 const ajv = new Ajv();
-const chalk = require("chalk");
+import chalk from "chalk";
 
 async function validateInterfaces() {
   console.log(chalk.blue("Validating interfaces..."));

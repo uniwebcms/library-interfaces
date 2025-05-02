@@ -1,0 +1,38 @@
+# Dependency directories
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Environment configuration
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Build outputs
+dist/
+build/
+out/
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# User config and data
+.uniweb/
+**/config.json
+
+# Log files
+logs/
+*.log
+npm-debug.log*
+
+# Temporary files
+tmp/
+temp/
