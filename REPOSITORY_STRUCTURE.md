@@ -38,8 +38,7 @@ The repository uses a domain-first, then full version, then concept organization
     /0.2.0/
       /core/
         portfolio-core.js
-/extensions/                     # Extension registry
-  /acme-marketing-v1.0.json      # Extension pointer file
+/examples/                       # Using library interfaces in practice
 /schema/                         # JSON Schema for validation
   /interface-schema.json         # Schema for interface validation
 /scripts/                        # Build and validation scripts
@@ -88,6 +87,7 @@ domain-concept.js
 ```
 
 For example:
+
 ```
 marketing-core.js
 documentation-technical.js
@@ -104,6 +104,7 @@ domain/version/concept
 ```
 
 For example:
+
 ```json
 "interfaces": ["marketing/1.0.0/core"]
 ```
