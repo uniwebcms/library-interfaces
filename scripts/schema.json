@@ -1,0 +1,44 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": ["description", "category", "version", "components"],
+    "properties": {
+      "description": {
+        "type": "string",
+        "description": "Description of the interface's purpose"
+      },
+      "category": {
+        "type": "string",
+        "description": "Domain category (marketing, documentation, etc.)"
+      },
+      "version": {
+        "type": "string",
+        "pattern": "^\\d+\\.\\d+\\.\\d+$",
+        "description": "Semantic version of the interface"
+      },
+      "components": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "required": ["description", "category", "presets"],
+          "properties": {
+            "description": {
+              "type": "string",
+              "description": "Description of the component's purpose"
+            },
+            "category": {
+              "type": "string",
+              "description": "Component category within the interface"
+            },
+            "presets": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string",
+                "description": "Description of the preset's purpose"
+              }
+            }
+          }
+        }
+      }
+    }
+  }

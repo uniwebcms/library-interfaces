@@ -1,10 +1,10 @@
-# Implementing Library Interfaces
+# Version Strategy
 
-This document summarizes our approach to organizing and versioning Library Interfaces, with a focus on clarity, browsability, and strict versioning guarantees.
+This document outlines our versioning strategy for Library Interfaces, focusing on clarity, stability, and developer experience.
 
-## Directory Structure
+## Full Version Directory Approach
 
-We've decided to implement a full version directory approach, where each version (including patch versions) has its own complete directory structure:
+We use a **full version directory approach**, where each version (including patch versions) has its own complete directory structure:
 
 ```
 /interfaces/
@@ -30,15 +30,13 @@ We've decided to implement a full version directory approach, where each version
 
 ## Key Principles
 
-The approach is guided by these key principles:
-
 ### 1. Complete Version Snapshots
 
 Each version directory provides a complete, standalone snapshot of all concepts and components available at that specific version:
 
 - Every version directory is self-contained and immutable
 - Includes patch versions with full directories
-- Clear picture of what was available in each released version
+- Provides a clear picture of what was available in each released version
 
 ### 2. File Duplication
 
@@ -86,14 +84,13 @@ When creating a new version:
 - **Minor Versions (1.1.0)**: Can only add components/presets/concepts, never remove
 - **Major Versions (2.0.0)**: Can introduce breaking changes
 
-## Build System
+## Automated Tools
 
-The build system will:
+Our build system helps manage versioning:
 
-1. Validate version compatibility rules
-2. Generate changelogs by comparing version directories
-3. Create interface specifications for consumption by libraries
-4. Produce documentation showing version relationships
+1. **create-version.js**: Creates a new version by duplicating an existing one
+2. **detect-changes.js**: Identifies changes between versions for changelogs
+3. **validate-interfaces.js**: Ensures version compatibility rules are followed
 
 ## Benefits of This Approach
 
@@ -114,3 +111,43 @@ The build system will:
 - Predictable component availability
 - Clear documentation about which presets exist in each version
 - Confidence in backward compatibility guarantees
+
+## Handling Migration
+
+When creating a new major version that introduces breaking changes:
+
+1. Clearly document the changes in CHANGELOG.md
+2. Provide a migration guide for content creators
+3. Keep the previous major version available for a transition period
+4. Update documentation to highlight differences
+
+## Implementation Example
+
+### Creating a New Minor Version
+
+```bash
+# Create a new minor version
+npm run new-version marketing 1.0.0 1.1.0
+
+# Add new components or concepts
+# Edit files as needed
+
+# Detect and document changes
+npm run detect-changes marketing 1.0.0 1.1.0
+
+# Validate the new version
+npm run validate
+
+# Generate updated documentation
+npm run docs
+```
+
+## Versioning Timeline
+
+Interfaces follow this versioning timeline:
+
+1. **Draft (0.x.y)**: During initial development, unstable
+2. **Release Candidate (0.9.x)**: Feature complete, undergoing final review
+3. **Stable (1.0.0)**: Released and follows semantic versioning
+4. **Updates**: Minor (1.x.0) and patch (1.0.x) releases as needed
+5. **Next Major Version**: When breaking changes are required

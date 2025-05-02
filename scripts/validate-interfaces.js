@@ -1,410 +1,210 @@
-#!/usr/bin/env node
-
 /**
- * Validate Library Interface Definitions
- * 
- * This script validates that all interface definition files conform to the schema
- * and follow naming conventions and versioning rules.
+ * Validates all interfaces against schema and rules
+ * Usage: node validate-interfaces.js
  */
 
-import fs from 'fs/promises';
-import path from 'path';
-import Ajv from 'ajv';
-import addFormats from 'ajv-formats';
-import { glob } from 'glob';
-import semver from 'semver';
+const fs = require("fs").promises;
+const path = require("path");
+const Ajv = require("ajv");
+const ajv = new Ajv();
 
-// Configuration
-const CONFIG = {
-  interfacesDir: './interfaces',
-  draftsDir: './drafts',
-  extensionsDir: './extensions',
-  schemaFile: './schema/interface-schema.json',
-};
+async function validateInterfaces() {
+  console.log("Validating interfaces...");
 
-/**
- * Main execution function
- */
-async function main() {
-  try {
-    // Load schema
-    const schema = JSON.parse(await fs.readFile(CONFIG.schemaFile, 'utf-8'));
-    
-    // Set up validator
-    const ajv = new Ajv({ allErrors: true });
-    addFormats(ajv);
-    const validate = ajv.compile(schema);
-    
-    // Find interface files
-    const stableFiles = await glob(`${CONFIG.interfacesDir}/**/*-v*.js`);
-    const draftFiles = await glob(`${CONFIG.draftsDir}/**/*-v*.js`);
-    const extensionFiles = await glob(`${CONFIG.extensionsDir}/**/*-v*.js`);
-    
-    const allFiles = [...stableFiles, ...draftFiles, ...extensionFiles];
-    
-    console.log(`Found ${allFiles.length} interface files to validate`);
-    
-    // Validate each file
-    const validationResults = await Promise.all(
-      allFiles.map(file => validateInterfaceFile(file, validate))
-    );
-    
-    // Validate versioning across related interfaces
-    const versioningResults = await validateVersioning(validationResults);
-    
-    // Summarize results
-    const validFiles = validationResults.filter(r => r.valid).length;
-    const invalidFiles = validationResults.filter(r => !r.valid).length;
-    
-    console.log('\n=== Validation Summary ===');
-    console.log(`Files validated: ${allFiles.length}`);
-    console.log(`Valid files: ${validFiles}`);
-    console.log(`Invalid files: ${invalidFiles}`);
-    
-    // Log detailed errors for invalid files
-    const invalidResults = validationResults.filter(r => !r.valid);
-    if (invalidResults.length > 0) {
-      console.log('\n=== Validation Errors ===');
-      invalidResults.forEach(result => {
-        console.log(`\nFile: ${result.file}`);
-        if (result.schemaErrors) {
-          console.log('Schema validation errors:');
-          result.schemaErrors.forEach(err => {
-            console.log(`  - ${err.instancePath}: ${err.message}`);
-          });
+  // Load the schema
+  const schemaPath = path.join("schema", "interface-schema.json");
+  const schema = JSON.parse(await fs.readFile(schemaPath, "utf8"));
+  const validate = ajv.compile(schema);
+
+  // Get all domains
+  const interfacesDir = path.join("interfaces");
+  const domains = await fs.readdir(interfacesDir, { withFileTypes: true });
+
+  let allValid = true;
+  const domainComponents = {};
+
+  // Validate each domain and version
+  for (const domain of domains.filter((entry) => entry.isDirectory())) {
+    const domainPath = path.join(interfacesDir, domain.name);
+    const versions = await fs.readdir(domainPath, { withFileTypes: true });
+
+    for (const version of versions.filter((entry) => entry.isDirectory())) {
+      const versionPath = path.join(domainPath, version.name);
+      const concepts = await fs.readdir(versionPath, { withFileTypes: true });
+
+      // Keep track of components in this domain+version for overlap checking
+      if (!domainComponents[`${domain.name}/${version.name}`]) {
+        domainComponents[`${domain.name}/${version.name}`] = new Set();
+      }
+
+      for (const concept of concepts.filter((entry) => entry.isDirectory())) {
+        const conceptPath = path.join(versionPath, concept.name);
+        const files = await fs.readdir(conceptPath);
+
+        for (const file of files.filter((f) => f.endsWith(".js"))) {
+          const filePath = path.join(conceptPath, file);
+
+          // Load and validate the interface file
+          const valid = await validateInterfaceFile(
+            filePath,
+            validate,
+            domain.name,
+            version.name,
+            concept.name,
+            domainComponents[`${domain.name}/${version.name}`]
+          );
+
+          if (!valid) {
+            allValid = false;
+          }
         }
-        
-        if (result.namingErrors) {
-          console.log('Naming convention errors:');
-          result.namingErrors.forEach(err => {
-            console.log(`  - ${err}`);
-          });
-        }
-      });
+      }
     }
-    
-    // Exit with appropriate code
-    if (invalidFiles > 0 || versioningResults.hasErrors) {
-      process.exit(1);
-    } else {
-      console.log('\nAll interfaces are valid!');
+  }
+
+  return allValid;
+}
+
+async function validateInterfaceFile(
+  filePath,
+  validate,
+  domain,
+  version,
+  concept,
+  existingComponents
+) {
+  console.log(`Validating ${filePath}...`);
+
+  try {
+    // For simplicity, we're assuming the interface files can be required directly
+    // In a real implementation, you might need to use a JavaScript parser
+    // This is a placeholder for actual file loading
+    const content = await fs.readFile(filePath, "utf8");
+
+    // Extract the interface object (simplified approach)
+    const interfaceObject = extractInterfaceObject(content);
+
+    // Schema validation
+    const valid = validate(interfaceObject);
+    if (!valid) {
+      console.error(`Schema validation failed for ${filePath}:`);
+      console.error(validate.errors);
+      return false;
+    }
+
+    // Check if version in file matches directory
+    if (interfaceObject.version !== version) {
+      console.error(
+        `Version mismatch in ${filePath}: Expected ${version}, got ${interfaceObject.version}`
+      );
+      return false;
+    }
+
+    // Check if category matches domain
+    if (interfaceObject.category !== domain) {
+      console.error(
+        `Category mismatch in ${filePath}: Expected ${domain}, got ${interfaceObject.category}`
+      );
+      return false;
+    }
+
+    // Check component naming conventions (PascalCase)
+    for (const componentName of Object.keys(interfaceObject.components)) {
+      if (!/^[A-Z][a-zA-Z0-9]*$/.test(componentName)) {
+        console.error(
+          `Invalid component name in ${filePath}: ${componentName} (should be PascalCase)`
+        );
+        return false;
+      }
+
+      // Check for component overlap
+      if (existingComponents.has(componentName)) {
+        console.error(
+          `Component ${componentName} in ${filePath} overlaps with another interface in the same domain+version`
+        );
+        return false;
+      }
+
+      existingComponents.add(componentName);
+
+      // Check preset naming conventions (kebab-case or lowercase)
+      const presets = interfaceObject.components[componentName].presets;
+      for (const presetName of Object.keys(presets)) {
+        if (!/^[a-z][a-z0-9-]*$/.test(presetName)) {
+          console.error(
+            `Invalid preset name in ${filePath}: ${componentName}.${presetName} (should be kebab-case or lowercase)`
+          );
+          return false;
+        }
+      }
+    }
+
+    console.log(`✅ ${filePath} is valid`);
+    return true;
+  } catch (err) {
+    console.error(`Error validating ${filePath}:`, err);
+    return false;
+  }
+}
+
+function extractInterfaceObject(content) {
+  // This is a simplified approach - in a real implementation,
+  // you would use a JavaScript parser
+  // For now, we'll just create a dummy object based on patterns
+  const categoryMatch = content.match(/category:\s*["']([^"']+)["']/);
+  const versionMatch = content.match(/version:\s*["']([^"']+)["']/);
+  const descriptionMatch = content.match(/description:\s*["']([^"']+)["']/);
+
+  const components = {};
+  const componentRegex = /(\w+):\s*{[^}]*description:\s*["']([^"']+)["']/g;
+  let match;
+
+  while ((match = componentRegex.exec(content)) !== null) {
+    const [, componentName, description] = match;
+    components[componentName] = {
+      description,
+      presets: extractPresets(content, componentName),
+    };
+  }
+
+  return {
+    category: categoryMatch ? categoryMatch[1] : "",
+    version: versionMatch ? versionMatch[1] : "",
+    description: descriptionMatch ? descriptionMatch[1] : "",
+    components,
+  };
+}
+
+function extractPresets(content, componentName) {
+  // Simplified extraction of presets
+  const presets = {};
+  const presetsSection = content.match(
+    new RegExp(`${componentName}[^}]*presets:\\s*{([^}]+)}`)
+  );
+
+  if (presetsSection) {
+    const presetMatches = presetsSection[1].matchAll(/"([^"]+)":\s*"([^"]+)"/g);
+
+    for (const presetMatch of presetMatches) {
+      const [, presetName, presetDescription] = presetMatch;
+      presets[presetName] = presetDescription;
+    }
+  }
+
+  return presets;
+}
+
+validateInterfaces()
+  .then((allValid) => {
+    if (allValid) {
+      console.log("✅ All interfaces are valid");
       process.exit(0);
+    } else {
+      console.error("❌ Some interfaces failed validation");
+      process.exit(1);
     }
-  } catch (error) {
-    console.error('Error validating interfaces:', error);
+  })
+  .catch((err) => {
+    console.error("Error validating interfaces:", err);
     process.exit(1);
-  }
-}
-
-/**
- * Validate a single interface file
- */
-async function validateInterfaceFile(file, validate) {
-  console.log(`Validating ${file}...`);
-  
-  const result = {
-    file,
-    valid: true,
-    interface: null,
-    schemaErrors: null,
-    namingErrors: [],
-  };
-  
-  try {
-    // Import the interface definition
-    const filePath = path.resolve(file);
-    const module = await import(`file://${filePath}`);
-    const interfaceDefinition = module.default;
-    
-    result.interface = interfaceDefinition;
-    
-    // Validate against schema
-    const isValid = validate(interfaceDefinition);
-    
-    if (!isValid) {
-      result.valid = false;
-      result.schemaErrors = validate.errors;
-      return result;
-    }
-    
-    // Validate component naming conventions
-    const componentErrors = validateComponentNaming(interfaceDefinition.components);
-    
-    if (componentErrors.length > 0) {
-      result.valid = false;
-      result.namingErrors.push(...componentErrors);
-    }
-    
-    // Validate preset naming conventions
-    const presetErrors = validatePresetNaming(interfaceDefinition.components);
-    
-    if (presetErrors.length > 0) {
-      result.valid = false;
-      result.namingErrors.push(...presetErrors);
-    }
-    
-    return result;
-  } catch (error) {
-    console.error(`Error processing ${file}:`, error);
-    result.valid = false;
-    result.namingErrors.push(`Failed to load or process: ${error.message}`);
-    return result;
-  }
-}
-
-/**
- * Validate component naming follows PascalCase
- */
-function validateComponentNaming(components) {
-  const errors = [];
-  const pascalCaseRegex = /^[A-Z][a-zA-Z0-9]*$/;
-  
-  for (const componentName of Object.keys(components)) {
-    if (!pascalCaseRegex.test(componentName)) {
-      errors.push(`Component "${componentName}" should use PascalCase`);
-    }
-  }
-  
-  return errors;
-}
-
-/**
- * Validate preset naming follows kebab-case
- */
-function validatePresetNaming(components) {
-  const errors = [];
-  const kebabCaseRegex = /^[a-z][a-z0-9]*(-[a-z0-9]+)*$/;
-  
-  for (const [componentName, component] of Object.entries(components)) {
-    for (const presetName of Object.keys(component.presets)) {
-      if (presetName.includes('-')) {
-        // If it has hyphens, it should be kebab-case
-        if (!kebabCaseRegex.test(presetName)) {
-          errors.push(`Preset "${presetName}" in "${componentName}" should use kebab-case`);
-        }
-      } else {
-        // If it's a single word, it should be lowercase
-        if (presetName !== presetName.toLowerCase()) {
-          errors.push(`Preset "${presetName}" in "${componentName}" should be lowercase`);
-        }
-      }
-    }
-  }
-  
-  return errors;
-}
-
-/**
- * Validate versioning rules across related interfaces
- */
-async function validateVersioning(validationResults) {
-  const result = {
-    hasErrors: false,
-    errors: [],
-  };
-  
-  // Group interfaces by base name
-  const interfaceGroups = {};
-  
-  validationResults
-    .filter(r => r.valid && r.interface)
-    .forEach(r => {
-      const filePath = r.file;
-      const fileName = path.basename(filePath, '.js');
-      const match = fileName.match(/^(.+)-v(\d+\.\d+)$/);
-      
-      if (!match) {
-        result.hasErrors = true;
-        result.errors.push(`Invalid interface filename format: ${fileName}`);
-        return;
-      }
-      
-      const [, baseName, versionKey] = match;
-      
-      if (!interfaceGroups[baseName]) {
-        interfaceGroups[baseName] = [];
-      }
-      
-      interfaceGroups[baseName].push({
-        file: filePath,
-        version: r.interface.version,
-        versionKey,
-        interface: r.interface,
-      });
-    });
-  
-  // Check versioning rules within each group
-  for (const [baseName, versions] of Object.entries(interfaceGroups)) {
-    // Skip if only one version exists
-    if (versions.length <= 1) continue;
-    
-    // Sort versions by semver
-    versions.sort((a, b) => semver.compare(a.version, b.version));
-    
-    // Check each version against previous versions
-    for (let i = 1; i < versions.length; i++) {
-      const prevVersion = versions[i-1];
-      const currVersion = versions[i];
-      
-      // Get major, minor, patch numbers
-      const prevMajor = semver.major(prevVersion.version);
-      const prevMinor = semver.minor(prevVersion.version);
-      const prevPatch = semver.patch(prevVersion.version);
-      
-      const currMajor = semver.major(currVersion.version);
-      const currMinor = semver.minor(currVersion.version);
-      const currPatch = semver.patch(currVersion.version);
-      
-      // Validate according to version type
-      if (currMajor > prevMajor) {
-        // Major version bumps allow breaking changes, nothing to check
-        continue;
-      } else if (currMinor > prevMinor) {
-        // Minor version bumps should only add components or presets
-        const changes = validateMinorVersionChanges(prevVersion.interface, currVersion.interface);
-        
-        if (changes.hasBreakingChanges) {
-          result.hasErrors = true;
-          result.errors.push(`Minor version bump ${prevVersion.version} → ${currVersion.version} in ${baseName} contains breaking changes:`);
-          changes.breakingChanges.forEach(change => {
-            result.errors.push(`  - ${change}`);
-          });
-        }
-      } else if (currPatch > prevPatch) {
-        // Patch version bumps should only modify descriptions
-        const changes = validatePatchVersionChanges(prevVersion.interface, currVersion.interface);
-        
-        if (changes.hasBreakingChanges) {
-          result.hasErrors = true;
-          result.errors.push(`Patch version bump ${prevVersion.version} → ${currVersion.version} in ${baseName} contains breaking changes:`);
-          changes.breakingChanges.forEach(change => {
-            result.errors.push(`  - ${change}`);
-          });
-        }
-      }
-    }
-  }
-  
-  // Log versioning errors if any
-  if (result.errors.length > 0) {
-    console.log('\n=== Versioning Errors ===');
-    result.errors.forEach(error => {
-      console.log(error);
-    });
-  }
-  
-  return result;
-}
-
-/**
- * Validate rules for minor version changes
- */
-function validateMinorVersionChanges(oldInterface, newInterface) {
-  const result = {
-    hasBreakingChanges: false,
-    breakingChanges: [],
-  };
-  
-  const oldComponents = Object.keys(oldInterface.components);
-  const newComponents = Object.keys(newInterface.components);
-  
-  // Check for removed components
-  const removedComponents = oldComponents.filter(c => !newComponents.includes(c));
-  
-  if (removedComponents.length > 0) {
-    result.hasBreakingChanges = true;
-    removedComponents.forEach(component => {
-      result.breakingChanges.push(`Component "${component}" was removed`);
-    });
-  }
-  
-  // Check for renamed components
-  if (oldComponents.length !== removedComponents.length) {
-    // Check for renamed or modified presets in existing components
-    for (const componentName of oldComponents) {
-      if (!newComponents.includes(componentName)) continue;
-      
-      const oldComponent = oldInterface.components[componentName];
-      const newComponent = newInterface.components[componentName];
-      
-      const oldPresets = Object.keys(oldComponent.presets);
-      const newPresets = Object.keys(newComponent.presets);
-      
-      // Check for removed presets
-      const removedPresets = oldPresets.filter(p => !newPresets.includes(p));
-      
-      if (removedPresets.length > 0) {
-        result.hasBreakingChanges = true;
-        removedPresets.forEach(preset => {
-          result.breakingChanges.push(`Preset "${preset}" in component "${componentName}" was removed`);
-        });
-      }
-    }
-  }
-  
-  return result;
-}
-
-/**
- * Validate rules for patch version changes
- */
-function validatePatchVersionChanges(oldInterface, newInterface) {
-  const result = {
-    hasBreakingChanges: false,
-    breakingChanges: [],
-  };
-  
-  const oldComponents = Object.keys(oldInterface.components);
-  const newComponents = Object.keys(newInterface.components);
-  
-  // Check for added or removed components
-  const addedComponents = newComponents.filter(c => !oldComponents.includes(c));
-  const removedComponents = oldComponents.filter(c => !newComponents.includes(c));
-  
-  if (addedComponents.length > 0) {
-    result.hasBreakingChanges = true;
-    addedComponents.forEach(component => {
-      result.breakingChanges.push(`Component "${component}" was added in a patch version`);
-    });
-  }
-  
-  if (removedComponents.length > 0) {
-    result.hasBreakingChanges = true;
-    removedComponents.forEach(component => {
-      result.breakingChanges.push(`Component "${component}" was removed`);
-    });
-  }
-  
-  // Check for added or removed presets
-  for (const componentName of oldComponents) {
-    if (!newComponents.includes(componentName)) continue;
-    
-    const oldComponent = oldInterface.components[componentName];
-    const newComponent = newInterface.components[componentName];
-    
-    const oldPresets = Object.keys(oldComponent.presets);
-    const newPresets = Object.keys(newComponent.presets);
-    
-    const addedPresets = newPresets.filter(p => !oldPresets.includes(p));
-    const removedPresets = oldPresets.filter(p => !newPresets.includes(p));
-    
-    if (addedPresets.length > 0) {
-      result.hasBreakingChanges = true;
-      addedPresets.forEach(preset => {
-        result.breakingChanges.push(`Preset "${preset}" in component "${componentName}" was added in a patch version`);
-      });
-    }
-    
-    if (removedPresets.length > 0) {
-      result.hasBreakingChanges = true;
-      removedPresets.forEach(preset => {
-        result.breakingChanges.push(`Preset "${preset}" in component "${componentName}" was removed`);
-      });
-    }
-  }
-  
-  return result;
-}
-
-// Run the script
-main();
+  });

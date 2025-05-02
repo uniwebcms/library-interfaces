@@ -1,0 +1,92 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Library Interface Definition",
+    "description": "Schema for validating Library Interface definitions",
+    "type": "object",
+    "required": ["id", "version", "description", "components"],
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Unique identifier for the interface, follows pattern: domain-vX.Y",
+        "pattern": "^[a-z0-9-]+-v[0-9]+\\.[0-9]+$"
+      },
+      "version": {
+        "type": "string",
+        "description": "Semantic version of the interface",
+        "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+      },
+      "description": {
+        "type": "string",
+        "description": "Brief description of the interface purpose",
+        "minLength": 10
+      },
+      "extends": {
+        "type": ["string", "array"],
+        "description": "Interface(s) that this interface extends",
+        "items": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+-v[0-9]+\\.[0-9]+$"
+        }
+      },
+      "components": {
+        "type": "object",
+        "description": "Map of component definitions",
+        "minProperties": 1,
+        "additionalProperties": {
+          "$ref": "#/definitions/component"
+        },
+        "propertyNames": {
+          "pattern": "^[A-Z][a-zA-Z0-9]*$"
+        }
+      }
+    },
+    "definitions": {
+      "component": {
+        "type": "object",
+        "required": ["presets"],
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "Description of the component's semantic purpose"
+          },
+          "presets": {
+            "type": "array",
+            "description": "List of semantic presets for this component",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]*$"
+            }
+          },
+          "deprecated": {
+            "type": "boolean",
+            "description": "Whether this component is deprecated"
+          },
+          "replacedBy": {
+            "type": "string",
+            "description": "Component that replaces this deprecated component",
+            "pattern": "^[A-Z][a-zA-Z0-9]*$"
+          }
+        }
+      }
+    },
+    "examples": [
+      {
+        "id": "marketing-v1.0",
+        "version": "1.0.0",
+        "description": "Standard interface for marketing websites",
+        "components": {
+          "Hero": {
+            "description": "Primary attention-grabbing section at the top of a page",
+            "presets": ["brand", "product", "campaign", "minimal"]
+          },
+          "FeatureShowcase": {
+            "description": "Highlights product or service features",
+            "presets": ["benefits", "capabilities", "process"]
+          }
+        }
+      }
+    ]
+  }
