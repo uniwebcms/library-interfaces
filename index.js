@@ -1,20 +1,18 @@
-/**
- * Library Interfaces
- *
- * This module exports utilities for working with Library Interfaces.
- */
+// Create a proper index.js in the root
+import * as path from "path";
+import { fileURLToPath } from "url";
 
-const path = require("path");
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Export key file paths
-exports.paths = {
+export const paths = {
   interfaces: path.join(__dirname, "interfaces"),
   drafts: path.join(__dirname, "drafts"),
   schema: path.join(__dirname, "schema", "interface-schema.json"),
 };
 
 // Export version utilities
-exports.version = require("./scripts/version-utils");
+export { default as version } from "./scripts/version-utils.js";
 
 // Export validation utilities
-exports.validate = require("./scripts/validation-utils");
+export { default as validate } from "./scripts/validation-utils.js";
